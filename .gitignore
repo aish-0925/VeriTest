@@ -1,12 +1,12 @@
 # =========================
-# 🔐 ENV & SECRETS
+#  ENV & SECRETS
 # =========================
 .env
 .env.*
 *.env
 
 # =========================
-# 🐍 PYTHON (BACKEND)
+#  PYTHON (BACKEND)
 # =========================
 __pycache__/
 *.pyc
@@ -23,13 +23,13 @@ env/
 *.log
 
 # =========================
-# 🗄️ DATABASE FILES
+#  DATABASE FILES
 # =========================
 *.db
 *.sqlite
 
 # =========================
-# ⚛️ REACT (FRONTEND)
+#  REACT (FRONTEND)
 # =========================
 node_modules/
 build/
@@ -41,14 +41,14 @@ yarn-debug.log*
 yarn-error.log*
 
 # =========================
-# 🧪 TEST / COVERAGE
+#  TEST / COVERAGE
 # =========================
 coverage/
 *.coverage
 htmlcov/
 
 # =========================
-# 🧰 IDE / EDITOR FILES
+#  IDE / EDITOR FILES
 # =========================
 .vscode/
 .idea/
@@ -57,7 +57,7 @@ htmlcov/
 .DS_Store
 
 # =========================
-# 📦 PACKAGE LOCKS (optional)
+#  PACKAGE LOCKS (optional)
 # =========================
 # Uncomment if needed
 # package-lock.json
