@@ -9,7 +9,7 @@ from app.utils.dependencies import get_current_user
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
 
-# 🔹 SCRIPT BUILDER
+#  SCRIPT BUILDER
 def build_selenium_script(title: str, description: str, url: str):
     test_name = title.replace(" ", "_").lower()
     desc = (description or "").lower()
@@ -73,7 +73,7 @@ def generate_script(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    # 🔒 Check ownership via project
+    #  Check ownership via project
     req = db.query(Requirement).join(Project).filter(
         Requirement.id == requirement_id,
         Project.user_id == current_user.id
@@ -82,14 +82,14 @@ def generate_script(
     if not req:
         raise HTTPException(status_code=404, detail="Requirement not found")
 
-    # 🧠 Generate script
+    #  Generate script
     script, actions, assertions = build_selenium_script(
         req.title,
         req.description,
         req.url or "https://example.com"
     )
 
-    # ✅ Update DB safely
+    #  Update DB safely
     req.status = "Generated"
     req.scripts_count = (req.scripts_count or 0) + 1
 
