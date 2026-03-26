@@ -36,7 +36,7 @@ def run_test(requirement_id: int, db: Session = Depends(get_db), user=Depends(ge
 
     start_time = time.time()
 
-    # ✅ CREATE EXECUTION
+    #  CREATE EXECUTION
     execution = Execution(
         project_id=requirement.project_id,
         status="RUNNING",
@@ -51,7 +51,7 @@ def run_test(requirement_id: int, db: Session = Depends(get_db), user=Depends(ge
         driver.get(requirement.url)
         time.sleep(2)
 
-        # ✅ CHECK RESULT
+        #  CHECK RESULT
         if requirement.expected_text:
             body = driver.find_element(By.TAG_NAME, "body").text
 
@@ -70,7 +70,7 @@ def run_test(requirement_id: int, db: Session = Depends(get_db), user=Depends(ge
     end_time = time.time()
     duration_seconds = end_time - start_time
 
-    # ✅ INSERT RESULT
+    #  INSERT RESULT
     result = ExecutionResult(
         execution_id=execution.id,
         testcase_id=1,
@@ -79,7 +79,7 @@ def run_test(requirement_id: int, db: Session = Depends(get_db), user=Depends(ge
     )
     db.add(result)
 
-    # ✅ UPDATE EXECUTION
+    #  UPDATE EXECUTION
     execution.status = status
     execution.ended_at = datetime.utcnow()
 
