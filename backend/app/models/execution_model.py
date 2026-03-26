@@ -20,3 +20,4 @@ class ExecutionResult(Base):
     testcase_id = Column(Integer)
     status = Column(String(50))
     duration = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
