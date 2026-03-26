@@ -7,7 +7,7 @@ export const getCompliance = async () => {
     return res.data || { sections: [] }; //  safe fallback
   } catch (err) {
     console.error("Error fetching compliance:", err);
-    return {}; // ✅ prevents crash
+    return {}; //  prevents crash
   }
 };
 
