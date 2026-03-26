@@ -107,7 +107,7 @@ function ReqDetail({ req, runs, onGenerate }) {
         )}
       </div>
 
-      {/* 🔥 FIX: handle "Pending" vs "pending" */}
+      {/*  FIX: handle "Pending" vs "pending" */}
       {req.status?.toLowerCase() === "pending" && (
         <div style={{ marginTop:16, paddingTop:16, borderTop:"1px solid var(--border)" }}>
           <Button onClick={onGenerate}>
@@ -131,7 +131,7 @@ export default function Requirements() {
       try {
         const res = await API.get("/requirements");
 
-        // 🔥 IMPORTANT: transform backend → frontend
+        //  IMPORTANT: transform backend → frontend
         const formatted = res.data.map(r => ({
           ...r,
           scriptsCount: r.scripts_count,
