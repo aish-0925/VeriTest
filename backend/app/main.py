@@ -50,7 +50,7 @@ Base.metadata.create_all(bind=engine)
 # --------------------------------------------------
 #  Include routes
 # --------------------------------------------------
-# ✅ FIXED VERSION
+#  FIXED VERSION
 app.include_router(auth_router)
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(requirement_router, prefix="/api")
@@ -65,6 +65,6 @@ app.include_router(project_router, prefix="/api")
 @app.get("/")
 def home():
     return {
-        "message": "🚀 VeriTest Backend Running",
+        "message": " VeriTest Backend Running",
         "status": "OK"
     }
