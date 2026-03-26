@@ -6,17 +6,17 @@ from app.models.requirement_model import Requirement
 from app.models.project_model import Project
 from app.utils.dependencies import get_current_user
 
-router = APIRouter(prefix="/api/generate", tags=["Generate"])
+router = APIRouter(prefix="/generate", tags=["Generate"])
 
-def build_selenium_script(title: str, description: str):
+
+# 🔹 SCRIPT BUILDER
+def build_selenium_script(title: str, description: str, url: str):
     test_name = title.replace(" ", "_").lower()
-
-    desc = description.lower()
+    desc = (description or "").lower()
 
     actions = []
     assertions = []
 
-    # 🔍 Basic NLP logic (extend later)
     if "login" in desc:
         actions = [
             'driver.find_element(By.ID, "email").send_keys("test@example.com")',
@@ -35,47 +35,45 @@ def build_selenium_script(title: str, description: str):
         assertions = ['assert "welcome" in driver.page_source.lower()']
 
     else:
-        actions = [
-            '# TODO: Add steps based on requirement'
-        ]
+        actions = ['# TODO: Add steps based on requirement']
         assertions = ['assert True']
 
-    # 🧪 Build script
     script = f"""import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
 
 class Test{test_name.capitalize()}:
 
     def setup_method(self):
         self.driver = webdriver.Chrome()
-        self.driver.get("https://example.com")
+        self.driver.get("{url}")
 
     def teardown_method(self):
         self.driver.quit()
 
     def test_{test_name}(self):
         driver = self.driver
-
 """
 
     for act in actions:
         script += f"        {act}\n"
 
     script += "\n"
+
     for a in assertions:
         script += f"        {a}\n"
 
     return script, actions, assertions
 
+
+# 🔹 GENERATE SCRIPT API
 @router.post("/script/{requirement_id}")
 def generate_script(
     requirement_id: int,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
-    #  Check requirement belongs to user
+    # 🔒 Check ownership via project
     req = db.query(Requirement).join(Project).filter(
         Requirement.id == requirement_id,
         Project.user_id == current_user.id
@@ -84,21 +82,24 @@ def generate_script(
     if not req:
         raise HTTPException(status_code=404, detail="Requirement not found")
 
-    #  Generate script
+    # 🧠 Generate script
     script, actions, assertions = build_selenium_script(
         req.title,
-        req.description
+        req.description,
+        req.url or "https://example.com"
     )
 
-    #  Update DB
-    req.status = "generated"
+    # ✅ Update DB safely
+    req.status = "Generated"
     req.scripts_count = (req.scripts_count or 0) + 1
 
     db.commit()
+    db.refresh(req)
 
-    #  Response
     return {
         "requirement_id": req.id,
+        "title": req.title,
+        "status": req.status,
         "code": script,
         "parsed": {
             "actions": actions,

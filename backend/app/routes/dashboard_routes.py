@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from collections import defaultdict
+from datetime import datetime
+
 from app.config.db import SessionLocal
 from app.models.execution_model import Execution, ExecutionResult
 from app.models.project_model import Project
 from app.utils.dependencies import get_current_user
-from collections import defaultdict
-from datetime import datetime
 
-router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
+router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 
 def get_db():
@@ -21,10 +22,11 @@ def get_db():
 @router.get("/")
 def get_dashboard(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
-
-    #  Get user projects
+    # ------------------------
+    # USER PROJECTS
+    # ------------------------
     projects = db.query(Project).filter(Project.user_id == current_user.id).all()
     project_ids = [p.id for p in projects]
 
@@ -39,15 +41,14 @@ def get_dashboard(
     ).all()
 
     # ------------------------
-    #  STATS
+    # STATS
     # ------------------------
-
     total_tests = len(results)
-    passed = len([r for r in results if r.status == "PASS"])
-    failed = len([r for r in results if r.status == "FAIL"])
+    passed = sum(1 for r in results if r.status == "PASS")
+    failed = sum(1 for r in results if r.status == "FAIL")
 
     pass_rate = (passed / total_tests * 100) if total_tests else 0
-    active_runs = len([e for e in executions if e.status == "RUNNING"])
+    active_runs = sum(1 for e in executions if e.status == "RUNNING")
 
     stats = {
         "coverage": round(pass_rate, 2),
@@ -57,14 +58,16 @@ def get_dashboard(
     }
 
     # ------------------------
-    #  HISTORY (GROUP BY DATE)
+    # HISTORY (FIXED)
     # ------------------------
-
     history_map = defaultdict(lambda: {"passed": 0, "failed": 0})
 
     for r in results:
-        date = r.id  # fallback if no timestamp
-        key = str(date)
+        # ✅ use timestamp if exists
+        if hasattr(r, "created_at") and r.created_at:
+            key = r.created_at.strftime("%Y-%m-%d")
+        else:
+            key = "unknown"
 
         if r.status == "PASS":
             history_map[key]["passed"] += 1
@@ -84,35 +87,43 @@ def get_dashboard(
             "coverage": round(coverage, 2)
         })
 
+    # ✅ sort by date
+    history.sort(key=lambda x: x["date"])
+
     # ------------------------
-    #  RECENT RUNS
+    # RECENT RUNS (OPTIMIZED)
     # ------------------------
+    result_map = defaultdict(list)
+
+    for r in results:
+        result_map[r.execution_id].append(r)
 
     runs = []
 
     for e in executions[-5:]:
-        run_results = [r for r in results if r.execution_id == e.id]
+        run_results = result_map.get(e.id, [])
 
         total = len(run_results)
-        passed = len([r for r in run_results if r.status == "PASS"])
+        passed = sum(1 for r in run_results if r.status == "PASS")
 
         coverage = (passed / total * 100) if total else 0
 
         runs.append({
             "id": f"RUN-{e.id}",
-            "script": "auto_test.py",  # can improve later
+            "script": getattr(e, "script_name", "auto_test.py"),
             "reqId": f"REQ-{e.project_id}",
             "status": e.status,
             "coverage": round(coverage),
-            "duration": "2s"  # improve later
+            "duration": getattr(e, "duration", "2s")
         })
 
-    runs = list(reversed(runs))
+    runs.reverse()
 
+    # ------------------------
+    # FINAL RESPONSE
+    # ------------------------
     return {
         "stats": stats,
         "history": history,
         "runs": runs
     }
-    
-    

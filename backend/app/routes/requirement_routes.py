@@ -1,26 +1,18 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.config.db import SessionLocal
+from app.config.db import get_db
 from app.models.requirement_model import Requirement
 from app.models.project_model import Project
 from app.schemas.requirement_schema import RequirementCreate, RequirementResponse
 from app.utils.dependencies import get_current_user
 
-router = APIRouter(prefix="/api/requirements", tags=["Requirements"])
+router = APIRouter(prefix="/requirements", tags=["Requirements"])
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-#  CREATE
-@router.post("/", response_model=RequirementResponse)
+# ✅ CREATE
+@router.post("/", response_model=RequirementResponse, status_code=status.HTTP_201_CREATED)
 def create_requirement(
     data: RequirementCreate,
     db: Session = Depends(get_db),
@@ -32,13 +24,9 @@ def create_requirement(
     ).first()
 
     if not project:
-        return {"error": "Unauthorized project"}
+        raise HTTPException(status_code=403, detail="Unauthorized project")
 
-    req = Requirement(
-        project_id=data.project_id,
-        title=data.title,
-        description=data.description
-    )
+    req = Requirement(**data.model_dump()) 
 
     db.add(req)
     db.commit()
@@ -47,31 +35,20 @@ def create_requirement(
     return req
 
 
-#  GET ALL (optimized)
-@router.get("/")
+# ✅ GET ALL
+@router.get("/", response_model=List[RequirementResponse])
 def get_requirements(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
     requirements = db.query(Requirement).join(Project).filter(
-        Project.user_id == current_user.id
-    ).all()
+    Project.user_id == current_user.id
+).all()
 
-    return [
-        {
-            "id": r.id,
-            "project_id": r.project_id,
-            "title": r.title,
-            "description": r.description,
-            "status": r.status,
-            "scriptsCount": r.scripts_count,
-            "createdAt": r.created_at
-        }
-        for r in requirements
-    ]
+    return requirements
 
 
-#  DELETE 
+# ✅ DELETE
 @router.delete("/{id}")
 def delete_requirement(
     id: int,
@@ -84,7 +61,7 @@ def delete_requirement(
     ).first()
 
     if not req:
-        return {"error": "Unauthorized or not found"}
+        raise HTTPException(status_code=404, detail="Requirement not found")
 
     db.delete(req)
     db.commit()
