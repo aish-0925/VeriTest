@@ -11,7 +11,7 @@ from app.utils.dependencies import get_current_user
 router = APIRouter(prefix="/requirements", tags=["Requirements"])
 
 
-# ✅ CREATE
+#  CREATE
 @router.post("/", response_model=RequirementResponse, status_code=status.HTTP_201_CREATED)
 def create_requirement(
     data: RequirementCreate,
@@ -35,7 +35,7 @@ def create_requirement(
     return req
 
 
-# ✅ GET ALL
+#  GET ALL
 @router.get("/", response_model=List[RequirementResponse])
 def get_requirements(
     db: Session = Depends(get_db),
@@ -48,7 +48,7 @@ def get_requirements(
     return requirements
 
 
-# ✅ DELETE
+#  DELETE
 @router.delete("/{id}")
 def delete_requirement(
     id: int,
