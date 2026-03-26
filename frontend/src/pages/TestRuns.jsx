@@ -60,12 +60,12 @@ export default function TestRuns() {
       const formatted = (data || []).map(r => ({
         ...r,
 
-        // ✅ map backend → frontend fields
+        //  map backend → frontend fields
         script: r.script_name || "-",
         reqId: r.requirement || r.requirement_id || "-",
         startedAt: r.created_at || "-",
 
-        // ✅ CRITICAL FIX (prevents crash)
+        //  CRITICAL FIX (prevents crash)
         logs: Array.isArray(r.logs) ? r.logs : [],
 
         // optional safety
