@@ -1,12 +1,12 @@
 # =========================
-# ENV & SECRETS
+# 🔐 ENV & SECRETS
 # =========================
 .env
 .env.*
 *.env
 
 # =========================
-# PYTHON (BACKEND)
+# 🐍 PYTHON (BACKEND)
 # =========================
 __pycache__/
 *.pyc
@@ -23,7 +23,7 @@ env/
 *.log
 
 # =========================
-# DATABASE FILES
+# 🗄️ DATABASE FILES
 # =========================
 *.db
 *.sqlite
