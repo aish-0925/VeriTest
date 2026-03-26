@@ -5,6 +5,8 @@ class RequirementCreate(BaseModel):
     project_id: int
     title: str
     description: str
+    url: str
+    expected_text: str
 
 
 class RequirementResponse(BaseModel):
@@ -13,8 +15,10 @@ class RequirementResponse(BaseModel):
     title: str
     description: str
     status: str
-    scriptsCount: int
-    createdAt: datetime
-
+    scripts_count: int
+    created_at: datetime
+    url: str
+    expected_text: str
+    
     class Config:
         from_attributes = True
