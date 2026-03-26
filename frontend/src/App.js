@@ -7,7 +7,8 @@ import TestRuns from "./pages/TestRuns";
 import Requirements from "./pages/Requirements";
 import Generate from "./pages/Generate";
 import Compliance from "./pages/Compliance";
-
+import Projects from "./pages/Projects";
+import CreateProject from "./pages/CreateProject";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -35,10 +36,12 @@ export default function App() {
                   <Layout>
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
+                      <Route path="/projects" element={<Projects />} />
                       <Route path="/runs" element={<TestRuns />} />
                       <Route path="/requirements" element={<Requirements />} />
                       <Route path="/generate" element={<Generate />} />
                       <Route path="/compliance" element={<Compliance />} />
+                       <Route path="/create-project" element={<CreateProject />} />
                     </Routes>
                   </Layout>
                 </ProtectedRoute>
