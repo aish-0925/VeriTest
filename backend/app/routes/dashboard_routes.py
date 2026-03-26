@@ -24,7 +24,7 @@ def get_dashboard(
     current_user = Depends(get_current_user)
 ):
 
-    # 🔐 Get user projects
+    #  Get user projects
     projects = db.query(Project).filter(Project.user_id == current_user.id).all()
     project_ids = [p.id for p in projects]
 
@@ -39,7 +39,7 @@ def get_dashboard(
     ).all()
 
     # ------------------------
-    # 📊 STATS
+    #  STATS
     # ------------------------
 
     total_tests = len(results)
@@ -57,7 +57,7 @@ def get_dashboard(
     }
 
     # ------------------------
-    # 📈 HISTORY (GROUP BY DATE)
+    #  HISTORY (GROUP BY DATE)
     # ------------------------
 
     history_map = defaultdict(lambda: {"passed": 0, "failed": 0})
@@ -85,7 +85,7 @@ def get_dashboard(
         })
 
     # ------------------------
-    # 🧪 RECENT RUNS
+    #  RECENT RUNS
     # ------------------------
 
     runs = []
@@ -114,3 +114,5 @@ def get_dashboard(
         "history": history,
         "runs": runs
     }
+    
+    
