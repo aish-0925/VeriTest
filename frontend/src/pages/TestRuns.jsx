@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { fetchTestRuns } from "../data/api";
+import { getTestRuns } from "../api/testRunApi";
 import { Badge, Card, SectionHeader, LoadingBar, LiveDot, PageLoader, CovBar, EmptyState } from "../components/Shared";
 
 const LOG_COLORS = { INFO:"var(--blue)", PASS:"var(--accent)", FAIL:"var(--red)", ERROR:"var(--amber)" };
@@ -55,11 +55,18 @@ export default function TestRuns() {
   const location = useLocation();
 
   useEffect(() => {
-    fetchTestRuns().then(data => {
+  getTestRuns()
+    .then(data => {
       setRuns(data);
-      if (location.state?.selectedRun) setSelected(location.state.selectedRun);
-    }).finally(() => setLoading(false));
-  }, [location.state]);
+      if (location.state?.selectedRun) {
+        setSelected(location.state.selectedRun);
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching test runs:", err);
+    })
+    .finally(() => setLoading(false));
+}, [location.state]);
 
   if (loading) return <PageLoader label="Loading test runs..."/>;
   const activeRuns = runs.filter(r => r.status === "RUNNING").length;
