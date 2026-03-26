@@ -10,10 +10,12 @@ from app.routes.generate_routes import router as generate_router
 from app.routes.dashboard_routes import router as dashboard_router
 from app.routes.test_run_routes import router as test_run_router
 from app.routes.compliance_routes import router as compliance_router
+from app.routes.project_routes import router as project_router
 
 # Import models (IMPORTANT for table creation)
 from app.models.user_model import User
 from app.models.project_model import Project
+from app.models.requirement_model import Requirement
 from app.models.execution_model import Execution, ExecutionResult
 from app.models.test_run_model import TestRun   #  ADD THIS
 
@@ -49,12 +51,13 @@ Base.metadata.create_all(bind=engine)
 #  Include routes
 # --------------------------------------------------
 # ✅ FIXED VERSION
-app.include_router(auth_router, prefix="/api")
+app.include_router(auth_router)
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(requirement_router, prefix="/api")
 app.include_router(generate_router, prefix="/api")
 app.include_router(test_run_router, prefix="/api")
 app.include_router(compliance_router, prefix="/api")
+app.include_router(project_router, prefix="/api")
 
 # --------------------------------------------------
 #  Root route
