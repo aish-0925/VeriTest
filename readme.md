@@ -91,7 +91,7 @@ Test Page
   <img src="assets/test.png" width="700"/>
 </p>
 
-Login Page
+Run Page
 <p align="center">
   <img src="assets/testrun.png" width="700"/>
 </p>
