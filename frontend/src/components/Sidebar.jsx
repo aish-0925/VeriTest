@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { LiveDot, useTheme } from "./Shared";
+import { getTestRuns } from "../api/testRunApi";
+
 
 const navItems = [
   { section: "Monitor", links: [
     { to: "/", label: "Dashboard", exact: true,
       icon: <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> },
-    { to: "/runs", label: "Test Runs", badge: "3",
+    { to: "/runs", label: "Test Runs",
       icon: <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
     { to: "/compliance", label: "Compliance",
       icon: <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg> },
@@ -19,8 +21,17 @@ const navItems = [
   ]},
 ];
 
+
+
 export default function Sidebar({ open, onClose }) {
   const { theme } = useTheme();
+  const [testRunCount, setTestRunCount] = useState(0);
+
+useEffect(() => {
+  getTestRuns()
+    .then(data => setTestRunCount(data.length))
+    .catch(err => console.error("Error fetching runs:", err));
+}, []);
   return (
     <>
       <div className={`sidebar-overlay ${open ? "show" : ""}`} onClick={onClose} />
@@ -47,7 +58,9 @@ export default function Sidebar({ open, onClose }) {
                   onClick={onClose}>
                   <span className="nav-icon">{icon}</span>
                   {label}
-                  {badge && <span className="nav-badge">{badge}</span>}
+                  {label === "Test Runs" && testRunCount > 0 && (
+                  <span className="nav-badge">{testRunCount}</span>
+                  )}
                 </NavLink>
               ))}
             </div>
@@ -55,7 +68,9 @@ export default function Sidebar({ open, onClose }) {
         </nav>
         <div className="sidebar-footer">
           <div className="sidebar-status">
-            <LiveDot /><span style={{ color: "var(--text3)", fontSize: 11, fontFamily: "var(--f-mono)" }}>3 active runs</span>
+            <LiveDot /><span style={{ color: "var(--text3)", fontSize: 11, fontFamily: "var(--f-mono)" }}><span style={{ color: "var(--text3)", fontSize: 11, fontFamily: "var(--f-mono)" }}>
+  {testRunCount} active runs
+</span></span>
           </div>
         </div>
       </aside>

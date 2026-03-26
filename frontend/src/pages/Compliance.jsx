@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { fetchCompliance, exportReport } from "../data/api";
+import { getCompliance, exportReport } from "../api/complianceApi";
 import { Badge, Card, CardTitle, SectionHeader, Button, Spinner, PageLoader, useToast } from "../components/Shared";
 
 function AnimatedBar({ coverage, status }) {
@@ -21,7 +21,11 @@ export default function Compliance() {
   const [exporting, setExporting] = useState(null);
   const toast = useToast();
 
-  useEffect(() => { fetchCompliance().then(setData); }, []);
+  useEffect(() => {
+  getCompliance()
+    .then(setData)
+    .catch(err => console.error("Error fetching compliance:", err));
+}, []);
 
   async function handleExport(fmt) {
     setExporting(fmt);

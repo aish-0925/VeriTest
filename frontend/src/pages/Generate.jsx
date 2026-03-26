@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { generateTestScript, createRequirement } from "../data/api";
+import API from "../api/axios";
 import { Card, CardTitle, SectionHeader, Button, Spinner, useToast } from "../components/Shared";
 
 function highlight(code) {
@@ -27,21 +27,48 @@ export default function Generate() {
   const toast = useToast();
 
   async function handleGenerate() {
-    if (!title.trim() || !desc.trim()) return;
-    setLoading(true); setResult(null); setSaved(false); setStep(0);
-    try {
-      await createRequirement({ title, description: desc });
-      await new Promise(r => setTimeout(r, 500)); setStep(1);
-      await new Promise(r => setTimeout(r, 500)); setStep(2);
-      const data = await generateTestScript("REQ-001");
-      setResult(data);
-      toast("Test script generated successfully", "success");
-    } catch(e) {
-      toast("Generation failed — check console", "error");
-    } finally {
-      setLoading(false); setStep(-1);
-    }
+  if (!title.trim() || !desc.trim()) return;
+
+  setLoading(true);
+  setResult(null);
+  setSaved(false);
+  setStep(0);
+
+  try {
+    //  1. Create Requirement
+    const res = await API.post("/requirements/", {
+      title: "Login Feature",
+      description: "User logs in",
+      priority: "High",
+      type: "Functional",
+      project_id: 1,
+    });
+
+    const reqId = res.data.id;
+
+    //  UI steps (keep for animation)
+    await new Promise(r => setTimeout(r, 400));
+    setStep(1);
+
+    await new Promise(r => setTimeout(r, 400));
+    setStep(2);
+
+    //  2. Generate Script from backend
+    const genRes = await API.post(`/generate/script/${reqId}`);
+
+    //  3. Set result
+    setResult(genRes.data);
+
+    toast("Test script generated successfully", "success");
+
+  } catch (e) {
+    console.error(e);
+    toast("Generation failed — check backend", "error");
+  } finally {
+    setLoading(false);
+    setStep(-1);
   }
+}
 
   function handleClear() {
     setTitle(""); setDesc(""); setResult(null); setSaved(false); setStep(-1);

@@ -23,7 +23,7 @@ export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const title = titles[location.pathname] || "VeriTest";
 
-  // ✅ ADDED: user + logout (INSIDE component)
+  //  ADDED: user + logout (INSIDE component)
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
@@ -50,7 +50,7 @@ export default function Layout({ children }) {
               <LiveDot /> Live
             </span>
 
-            {/* ✅ OPTIONAL: show user name */}
+            {/*  OPTIONAL: show user name */}
             {user && <span>{user.name}</span>}
 
             <button className="theme-toggle" onClick={toggle} title="Toggle theme">
@@ -64,7 +64,7 @@ export default function Layout({ children }) {
               New Test
             </Button>
 
-            {/* ✅ ADDED: logout button */}
+            {/*  ADDED: logout button */}
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Logout
             </Button>
