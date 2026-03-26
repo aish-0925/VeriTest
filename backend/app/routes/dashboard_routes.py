@@ -63,7 +63,7 @@ def get_dashboard(
     history_map = defaultdict(lambda: {"passed": 0, "failed": 0})
 
     for r in results:
-        # ✅ use timestamp if exists
+        #  use timestamp if exists
         if hasattr(r, "created_at") and r.created_at:
             key = r.created_at.strftime("%Y-%m-%d")
         else:
@@ -87,7 +87,7 @@ def get_dashboard(
             "coverage": round(coverage, 2)
         })
 
-    # ✅ sort by date
+    #  sort by date
     history.sort(key=lambda x: x["date"])
 
     # ------------------------
