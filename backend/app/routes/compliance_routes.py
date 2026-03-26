@@ -15,7 +15,7 @@ def get_compliance(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    # 🔒 user projects
+    #  user projects
     projects = db.query(Project).filter(Project.user_id == current_user.id).all()
     project_ids = [p.id for p in projects]
 
@@ -36,14 +36,14 @@ def get_compliance(
             "sections": []
         }
 
-    # ✅ counts
+    #  counts
     passed = len([r for r in runs if r.status == "Passed"])
     failed = len([r for r in runs if r.status == "Failed"])
     running = len([r for r in runs if r.status == "Running"])
 
     coverage = (passed / total) * 100
 
-    # ✅ overall status
+    #  overall status
     if failed > 0:
         overall_status = "FAIL"
     elif running > 0:
@@ -53,7 +53,7 @@ def get_compliance(
     else:
         overall_status = "PENDING"
 
-    # ✅ section breakdown (by project)
+    #  section breakdown (by project)
     sections = []
 
     for p in projects:
@@ -76,7 +76,7 @@ def get_compliance(
             status = "PENDING"
 
         sections.append({
-            "name": p.name,   # ✅ better than "Project 1"
+            "name": p.name,   
             "coverage": round(sec_coverage),
             "status": status
         })
