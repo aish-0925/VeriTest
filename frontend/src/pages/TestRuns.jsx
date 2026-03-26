@@ -26,13 +26,13 @@ function LogPanel({ run, onClose }) {
       <div style={{ marginBottom:18 }}>
         <div style={{ fontSize:10, color:"var(--text3)", fontFamily:"var(--f-mono)", letterSpacing:"1.2px", textTransform:"uppercase", marginBottom:10 }}>Execution Logs</div>
         <div style={{ background:"var(--bg)", border:"1px solid var(--border)", borderRadius:"var(--r)", padding:"12px 14px" }}>
-          {run.logs.map((log, i) => (
-            <div key={i} className="log-line">
-              <span className="log-time">{log.t}</span>
-              <span style={{ color: LOG_COLORS[log.level]||"var(--text3)", width:48, flexShrink:0, fontWeight:500 }}>{log.level}</span>
-              <span style={{ color: log.level==="INFO" ? "var(--text2)" : LOG_COLORS[log.level]||"var(--text2)" }}>{log.msg}</span>
-            </div>
-          ))}
+          {(run.logs || []).map((log, i) => (
+  <div key={i} className="log-line">
+    <span className="log-time">{log.t}</span>
+    <span style={{ color: LOG_COLORS[log.level]||"var(--text3)", width:48 }}>{log.level}</span>
+    <span>{log.msg}</span>
+  </div>
+))}
         </div>
       </div>
 
@@ -57,7 +57,23 @@ export default function TestRuns() {
   useEffect(() => {
   getTestRuns()
     .then(data => {
-      setRuns(data);
+      const formatted = (data || []).map(r => ({
+        ...r,
+
+        // ✅ map backend → frontend fields
+        script: r.script_name || "-",
+        reqId: r.requirement || r.requirement_id || "-",
+        startedAt: r.created_at || "-",
+
+        // ✅ CRITICAL FIX (prevents crash)
+        logs: Array.isArray(r.logs) ? r.logs : [],
+
+        // optional safety
+        coverage: r.coverage ?? 0
+      }));
+
+      setRuns(formatted);
+
       if (location.state?.selectedRun) {
         setSelected(location.state.selectedRun);
       }

@@ -8,6 +8,11 @@ const navItems = [
   { section: "Monitor", links: [
     { to: "/", label: "Dashboard", exact: true,
       icon: <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> },
+    { to: "/projects", label: "Projects",
+      icon: <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path d="M3 7h18M3 12h18M3 17h18"/>
+      </svg>
+    },
     { to: "/runs", label: "Test Runs",
       icon: <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
     { to: "/compliance", label: "Compliance",
@@ -29,7 +34,7 @@ export default function Sidebar({ open, onClose }) {
 
 useEffect(() => {
   getTestRuns()
-    .then(data => setTestRunCount(data.length))
+    .then(data => setTestRunCount(data.count))
     .catch(err => console.error("Error fetching runs:", err));
 }, []);
   return (
